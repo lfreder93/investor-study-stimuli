@@ -436,6 +436,104 @@
     cursor: pointer;
     font-family: 'DM Sans', sans-serif;
   }
+
+  /* MANIPULATION CHECK MODAL */
+  .mc-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(4, 44, 83, 0.55);
+    z-index: 300;
+    align-items: center;
+    justify-content: center;
+  }
+  .mc-overlay.active { display: flex; }
+  .mc-modal {
+    background: white;
+    border-radius: 16px;
+    padding: 40px 44px;
+    max-width: 480px;
+    width: 92%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  }
+  .mc-modal h3 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--blue-900);
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+  .mc-modal p.mc-sub {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+  }
+  .mc-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .mc-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 13px 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    font-size: 14px;
+    color: var(--text-primary);
+    background: white;
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.4;
+    width: 100%;
+  }
+  .mc-option:hover { border-color: var(--blue-200); background: var(--blue-50); }
+  .mc-option.selected { border-color: var(--blue-600); background: var(--blue-50); }
+  .mc-option-radio {
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s;
+  }
+  .mc-option.selected .mc-option-radio { border-color: var(--blue-600); background: var(--blue-600); }
+  .mc-option.selected .mc-option-radio::after { content: ''; width: 6px; height: 6px; background: white; border-radius: 50%; }
+  .mc-error {
+    display: none;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13.5px;
+    color: #b91c1c;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  .mc-error.visible { display: block; }
+  .mc-submit {
+    width: 100%;
+    background: var(--blue-800);
+    color: white;
+    border: none;
+    border-radius: 9px;
+    padding: 13px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.15s;
+  }
+  .mc-submit:hover { background: var(--blue-900); }
 </style>
 </head>
 <body>
@@ -454,10 +552,41 @@
   </div>
 </div>
 
+<!-- MANIPULATION CHECK MODAL -->
+<div class="mc-overlay" id="mcOverlay">
+  <div class="mc-modal">
+    <h3>Quick check before you continue</h3>
+    <p class="mc-sub">Please answer the following question based on the page you just reviewed.</p>
+    <p style="font-size:14px; font-weight:500; color:var(--text-primary); margin-bottom:16px;">What best describes the purpose of InvestorShield?</p>
+    <div class="mc-options">
+      <button class="mc-option" onclick="selectOption(this, 'a')">
+        <div class="mc-option-radio"></div>
+        To help people buy and sell investments
+      </button>
+      <button class="mc-option" onclick="selectOption(this, 'b')">
+        <div class="mc-option-radio"></div>
+        To protect investors from financial harm
+      </button>
+      <button class="mc-option" onclick="selectOption(this, 'c')">
+        <div class="mc-option-radio"></div>
+        To lend money to consumers and businesses
+      </button>
+      <button class="mc-option" onclick="selectOption(this, 'd')">
+        <div class="mc-option-radio"></div>
+        To provide insurance coverage for homeowners
+      </button>
+    </div>
+    <div class="mc-error" id="mcError">
+      We're sorry, your response is incorrect. Please close this window, review the page, and try again.
+    </div>
+    <button class="mc-submit" onclick="submitCheck()">Submit answer</button>
+  </div>
+</div>
+
 <!-- STUDY BAR -->
 <div class="study-bar">
   <p>Study session active — please review this page before continuing</p>
-  <button class="study-btn" onclick="window.parent.postMessage('qualtrics-next', '*')">Continue to survey →</button>
+  <button class="study-btn" onclick="openMC()">Continue to survey →</button>
 </div>
 
 <!-- NAV -->
@@ -571,6 +700,10 @@
 </footer>
 
 <script>
+  var QUALTRICS_URL = 'YOUR_QUALTRICS_URL_HERE';
+  var CORRECT_ANSWER = 'b';
+  var selectedAnswer = null;
+
   function showDeadEnd(e) {
     e.preventDefault();
     document.getElementById('deadEnd').classList.add('active');
@@ -580,6 +713,40 @@
   }
   document.getElementById('deadEnd').addEventListener('click', function(e) {
     if (e.target === this) closeDeadEnd();
+  });
+
+  function openMC() {
+    selectedAnswer = null;
+    document.querySelectorAll('.mc-option').forEach(function(o) { o.classList.remove('selected'); });
+    document.getElementById('mcError').classList.remove('visible');
+    document.getElementById('mcOverlay').classList.add('active');
+  }
+
+  function selectOption(el, val) {
+    document.querySelectorAll('.mc-option').forEach(function(o) { o.classList.remove('selected'); });
+    el.classList.add('selected');
+    selectedAnswer = val;
+    document.getElementById('mcError').classList.remove('visible');
+  }
+
+  function submitCheck() {
+    if (!selectedAnswer) {
+      document.getElementById('mcError').textContent = 'Please select an answer before continuing.';
+      document.getElementById('mcError').classList.add('visible');
+      return;
+    }
+    if (selectedAnswer === CORRECT_ANSWER) {
+      window.location.href = QUALTRICS_URL;
+    } else {
+      document.getElementById('mcError').textContent = "We're sorry, your response is incorrect. Please close this window, review the page, and try again.";
+      document.getElementById('mcError').classList.add('visible');
+    }
+  }
+
+  document.getElementById('mcOverlay').addEventListener('click', function(e) {
+    if (e.target === this) {
+      this.classList.remove('active');
+    }
   });
 </script>
 </body>
