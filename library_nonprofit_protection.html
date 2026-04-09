@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InvestorShield Learning Resource Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --accent: #185FA5;
+    --accent-light: #E6F1FB;
+    --accent-mid: #85B7EB;
+    --accent-dark: #042C53;
+    --text-primary: #111;
+    --text-secondary: #555;
+    --text-muted: #888;
+    --border: #e2e2dc;
+    --surface: #f8f8f4;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text-primary); min-height: 100vh; }
+
+  .study-bar { background: #1a1a1a; padding: 12px 40px; display: flex; align-items: center; justify-content: space-between; }
+  .study-bar p { font-size: 12.5px; color: #aaa; }
+  .study-btn { background: white; color: #1a1a1a; border: none; border-radius: 7px; padding: 8px 20px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+
+  nav { background: white; border-bottom: 1px solid var(--border); padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 58px; }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-mark { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: var(--accent); flex-shrink: 0; }
+  .logo-name { font-family: 'Source Serif 4', sans-serif; font-size: 18px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.3px; }
+  .nav-badge { font-size: 11px; font-weight: 500; padding: 4px 12px; border-radius: 20px; background: var(--accent-light); color: var(--accent); }
+
+  /* HERO - full width, graphic bottom-aligned */
+  .hero { background: var(--accent-dark); padding: 44px 40px 0; display: grid; grid-template-columns: 1fr 300px; gap: 40px; align-items: flex-end; }
+  .hero-text { padding-bottom: 40px; }
+  .hero-org-intro { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 20px; max-width: 480px; line-height: 1.65; }
+  .hero-library-label { font-size: 11.5px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-mid); margin-bottom: 10px; }
+  .hero-headline { font-family: 'Source Serif 4', serif; font-size: 34px; font-weight: 600; color: white; line-height: 1.18; letter-spacing: -0.5px; margin-bottom: 18px; }
+  .hero-mission { font-size: 15px; color: rgba(255,255,255,0.85); max-width: 480px; line-height: 1.72; }
+  .hero-graphic { align-self: flex-end; }
+
+  /* PROGRESS BAR */
+  .progress-bar-section { background: var(--accent); padding: 12px 40px; display: flex; align-items: center; gap: 16px; }
+  .progress-track { flex: 1; max-width: 280px; height: 6px; background: rgba(255,255,255,0.25); border-radius: 10px; overflow: hidden; }
+  .progress-fill { height: 100%; background: white; border-radius: 10px; transition: width 0.4s; width: 0%; }
+  .progress-label { font-size: 12.5px; color: rgba(255,255,255,0.85); }
+  .progress-count { font-size: 12.5px; font-weight: 500; color: white; margin-left: auto; }
+
+  /* MAIN — equal columns */
+  .main { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; padding: 32px 40px; max-width: 1100px; margin: 0 auto; }
+
+  /* ARTICLE CARDS */
+  .articles-label { font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); margin-bottom: 14px; }
+  .article-card {
+    display: flex; align-items: flex-start; gap: 14px;
+    background: white; border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 18px; margin-bottom: 10px;
+    cursor: pointer; transition: border-color 0.15s, transform 0.1s;
+  }
+  .article-card:hover { border-color: var(--accent-mid); transform: translateY(-1px); }
+  .article-card.visited { border-left: 3px solid var(--accent); }
+  .article-num { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; background: var(--accent-light); color: var(--accent); }
+  .article-body { flex: 1; min-width: 0; }
+  .article-title { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 4px; }
+  .article-desc { font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 9px; }
+  .article-meta { display: flex; align-items: center; justify-content: space-between; }
+  .article-time { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--text-muted); }
+  .read-link { font-size: 12px; font-weight: 500; color: var(--accent); }
+  .article-check { display: none; flex-shrink: 0; color: var(--accent); margin-top: 2px; }
+  .article-card.visited .article-check { display: block; }
+
+  /* SIDEBAR — equal to article column */
+  .sidebar { display: flex; flex-direction: column; gap: 14px; }
+  .sidebar-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 22px; }
+  .sidebar-card-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 14px; }
+  .sidebar-about { font-size: 14px; color: var(--text-secondary); line-height: 1.68; }
+  .sidebar-stat { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13.5px; }
+  .sidebar-stat:last-of-type { margin-bottom: 0; }
+  .stat-label { color: var(--text-secondary); }
+  .stat-value { font-weight: 500; color: var(--accent); }
+  .continue-btn { width: 100%; background: var(--accent); color: white; border: none; border-radius: 9px; padding: 13px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 16px; transition: opacity 0.15s; }
+  .continue-btn:hover { opacity: 0.88; }
+
+  /* MANIPULATION CHECK */
+  .mc-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.52); z-index: 300; align-items: center; justify-content: center; }
+  .mc-overlay.active { display: flex; }
+  .mc-modal { background: white; border-radius: 16px; padding: 40px 44px; max-width: 480px; width: 92%; box-shadow: 0 20px 60px rgba(0,0,0,0.18); }
+  .mc-modal h3 { font-family: 'Source Serif 4', serif; font-size: 20px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+  .mc-sub { font-size: 13.5px; color: var(--text-muted); margin-bottom: 24px; }
+  .mc-question { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 16px; }
+  .mc-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+  .mc-option { display: flex; align-items: flex-start; gap: 12px; padding: 13px 16px; border: 1px solid var(--border); border-radius: 10px; cursor: pointer; font-size: 14px; color: var(--text-primary); background: white; text-align: left; font-family: 'DM Sans', sans-serif; line-height: 1.4; width: 100%; transition: border-color 0.15s; }
+  .mc-option:hover { border-color: var(--accent-mid); background: var(--accent-light); }
+  .mc-option.selected { border-color: var(--accent); background: var(--accent-light); }
+  .mc-option-radio { width: 16px; height: 16px; border: 1.5px solid var(--border); border-radius: 50%; flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .mc-option.selected .mc-option-radio { border-color: var(--accent); background: var(--accent); }
+  .mc-option.selected .mc-option-radio::after { content: ''; width: 6px; height: 6px; background: white; border-radius: 50%; display: block; }
+  .mc-error { display: none; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px 16px; font-size: 13.5px; color: #b91c1c; margin-bottom: 16px; line-height: 1.5; }
+  .mc-error.visible { display: block; }
+  .mc-submit { width: 100%; background: var(--accent); color: white; border: none; border-radius: 9px; padding: 13px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .mc-submit:hover { opacity: 0.9; }
+</style>
+</head>
+<body>
+
+<div class="mc-overlay" id="mcOverlay">
+  <div class="mc-modal">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">
+      <h3>Quick check before you continue</h3>
+      <button onclick="closeMC()" style="background:none;border:none;cursor:pointer;font-size:22px;color:#aaa;padding:0 0 0 12px;line-height:1;">&times;</button>
+    </div>
+    <p class="mc-sub">Please answer the following question based on the page you just reviewed.</p>
+    <p class="mc-question">What best describes the purpose of InvestorShield?</p>
+    <div class="mc-options">
+      <button class="mc-option" onclick="selectOption(this,'a')"><div class="mc-option-radio"></div>To help people buy and sell investments</button>
+      <button class="mc-option" onclick="selectOption(this,'b')"><div class="mc-option-radio"></div>To protect investors from financial harm</button>
+      <button class="mc-option" onclick="selectOption(this,'c')"><div class="mc-option-radio"></div>To lend money to consumers and businesses</button>
+      <button class="mc-option" onclick="selectOption(this,'d')"><div class="mc-option-radio"></div>To provide insurance coverage for homeowners</button>
+    </div>
+    <div class="mc-error" id="mcError"></div>
+    <button class="mc-submit" onclick="submitCheck()">Submit answer</button>
+  </div>
+</div>
+
+<div class="study-bar">
+  <p>Study session active — please review this library before continuing</p>
+  <button class="study-btn" onclick="openMC()">Continue to survey →</button>
+</div>
+
+<nav>
+  <div class="logo">
+    <div class="logo-mark"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2L3 6v5c0 4 3 7.5 7 8.5 4-1 7-4.5 7-8.5V6L10 2z" fill="white"/></svg></div>
+    <span class="logo-name">InvestorShield</span>
+  </div>
+  <span class="nav-badge">Nonprofit · Independent · No financial stake in your investments</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-text">
+    <p class="hero-org-intro">InvestorShield is an independent, nonprofit organization with no financial stake in your investments, dedicated to providing unbiased educational resources for every investor.</p>
+    <div class="hero-library-label">InvestorShield Learning Resource Center</div>
+    <h1 class="hero-headline">Know the risks before you invest</h1>
+    <p class="hero-mission">Welcome to the InvestorShield Learning Resource Center. Our goal is to help you recognize the risks and red flags that every investor needs to watch out for. As an independent, nonprofit organization with no financial stake in your investments, we’ve designed this series of short articles as a starting point — investing involves a lot of moving parts, and these concepts are just the beginning. After completing them, you’ll know exactly what to look for — and what to look out for — before putting your money on the line. ⚠️⚠️⚠️</p>
+  </div>
+  <div class="hero-graphic"><svg width="280" height="200" viewBox="0 0 280 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- GRAPH BACKGROUND PANEL -->
+  <rect x="120" y="20" width="148" height="120" rx="8" fill="white" opacity="0.1"/>
+  <rect x="120" y="20" width="148" height="120" rx="8" stroke="white" stroke-width="1.5" opacity="0.25" fill="none"/>
+
+  <!-- Graph grid lines -->
+  <line x1="130" y1="50" x2="258" y2="50" stroke="white" stroke-width="0.8" opacity="0.2"/>
+  <line x1="130" y1="75" x2="258" y2="75" stroke="white" stroke-width="0.8" opacity="0.2"/>
+  <line x1="130" y1="100" x2="258" y2="100" stroke="white" stroke-width="0.8" opacity="0.2"/>
+  <line x1="130" y1="125" x2="258" y2="125" stroke="white" stroke-width="0.8" opacity="0.2"/>
+
+  <!-- Erratic volatile graph line - goes all over the place -->
+  <polyline points="132,95 145,60 155,115 165,45 175,120 185,55 195,130 205,42 215,118 225,35 235,105 245,50 255,88" stroke="#e53e3e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- Warning arrows on the graph spikes -->
+  <text x="205" y="36" text-anchor="middle" font-size="12" fill="#e53e3e" font-family="sans-serif" opacity="0.9">↑</text>
+  <text x="195" y="145" text-anchor="middle" font-size="12" fill="#e53e3e" font-family="sans-serif" opacity="0.9">↓</text>
+
+  <!-- Question marks floating around graph -->
+  <text x="268" y="55" font-size="18" fill="white" font-family="sans-serif" font-weight="700" opacity="0.7">?</text>
+  <text x="270" y="100" font-size="14" fill="white" font-family="sans-serif" font-weight="700" opacity="0.5">?</text>
+  <text x="265" y="140" font-size="11" fill="white" font-family="sans-serif" font-weight="700" opacity="0.4">?</text>
+
+  <!-- PERSON - body -->
+  <!-- Head -->
+  <circle cx="72" cy="52" r="26" fill="#85B7EB" opacity="0.85"/>
+  <!-- Worried face -->
+  <!-- Eyes - wide/concerned -->
+  <circle cx="64" cy="48" r="4" fill="white"/>
+  <circle cx="80" cy="48" r="4" fill="white"/>
+  <circle cx="65" cy="49" r="2" fill="#042C53"/>
+  <circle cx="81" cy="49" r="2" fill="#042C53"/>
+  <!-- Worried brow - furrowed -->
+  <path d="M60 42 Q64 39 68 42" stroke="#042C53" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M76 42 Q80 39 84 42" stroke="#042C53" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Frown -->
+  <path d="M63 62 Q72 57 81 62" stroke="#042C53" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Sweat drop -->
+  <path d="M88 38 Q91 32 94 38 Q91 43 88 38z" fill="#85B7EB" opacity="0.7"/>
+
+  <!-- Body / torso -->
+  <rect x="50" y="78" width="44" height="55" rx="10" fill="#85B7EB" opacity="0.75"/>
+
+  <!-- Arms -->
+  <!-- Left arm down -->
+  <path d="M50 90 Q30 105 28 125" stroke="#85B7EB" stroke-width="10" stroke-linecap="round" fill="none" opacity="0.75"/>
+  <!-- Right arm holding calculator up toward graph -->
+  <path d="M94 90 Q108 80 115 70" stroke="#85B7EB" stroke-width="10" stroke-linecap="round" fill="none" opacity="0.75"/>
+
+  <!-- Calculator in right hand -->
+  <rect x="106" y="55" width="28" height="36" rx="4" fill="white" opacity="0.9"/>
+  <rect x="106" y="55" width="28" height="36" rx="4" stroke="#85B7EB" stroke-width="1.5" fill="none"/>
+  <!-- Calculator screen -->
+  <rect x="109" y="58" width="22" height="9" rx="2" fill="#E6F1FB"/>
+  <!-- Calculator buttons -->
+  <rect x="109" y="70" width="5" height="4" rx="1" fill="#85B7EB" opacity="0.6"/>
+  <rect x="116" y="70" width="5" height="4" rx="1" fill="#85B7EB" opacity="0.6"/>
+  <rect x="123" y="70" width="5" height="4" rx="1" fill="#e53e3e" opacity="0.7"/>
+  <rect x="109" y="76" width="5" height="4" rx="1" fill="#85B7EB" opacity="0.6"/>
+  <rect x="116" y="76" width="5" height="4" rx="1" fill="#85B7EB" opacity="0.6"/>
+  <rect x="123" y="76" width="5" height="4" rx="1" fill="#85B7EB" opacity="0.6"/>
+  <rect x="109" y="82" width="5" height="4" rx="1" fill="#85B7EB" opacity="0.6"/>
+  <rect x="116" y="82" width="14" height="4" rx="1" fill="#85B7EB" opacity="0.6"/>
+  <!-- Screen number showing confusion -->
+  <text x="120" y="65" text-anchor="middle" font-size="6" fill="#042C53" font-family="monospace" font-weight="700">???</text>
+
+  <!-- Legs -->
+  <rect x="55" y="130" width="14" height="40" rx="7" fill="#85B7EB" opacity="0.7"/>
+  <rect x="75" y="130" width="14" height="40" rx="7" fill="#85B7EB" opacity="0.7"/>
+
+  <!-- Warning triangles scattered -->
+  <path d="M10 165 l14-24 l14 24z" fill="#e53e3e" opacity="0.55"/>
+  <text x="24" y="162" text-anchor="middle" font-size="10" fill="white" font-family="sans-serif" font-weight="700">!</text>
+
+  <path d="M248 160 l10-18 l10 18z" fill="#e53e3e" opacity="0.55"/>
+  <text x="258" y="157" text-anchor="middle" font-size="8" fill="white" font-family="sans-serif" font-weight="700">!</text>
+
+  <path d="M10 125 l8-14 l8 14z" fill="#e53e3e" opacity="0.4"/>
+  <text x="18" y="122" text-anchor="middle" font-size="7" fill="white" font-family="sans-serif" font-weight="700">!</text>
+</svg></div>
+</div>
+
+<div class="progress-bar-section">
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <span class="progress-label" id="progressLabel">0 of 7 articles read</span>
+  <span class="progress-count" id="articlesReadNav">0 / 7</span>
+</div>
+
+<div class="main">
+  <div class="articles-section">
+    <div class="articles-label">This series includes 7 articles — click any to read</div>
+    
+        <div class="article-card" id="card-article1" onclick="trackArticleClick('article1', 'What Is a Stock?', 'articles.html#article1')">
+          <div class="article-num">01</div>
+          <div class="article-body">
+            <div class="article-title">What Is a Stock?</div>
+            <div class="article-desc">Learn what stocks are, why companies issue them, and the different types available to investors.</div>
+            <div class="article-meta">
+              <span class="article-time">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v3l2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                4 min read
+              </span>
+              <span class="read-link">Read article →</span>
+            </div>
+          </div>
+          <div class="article-check" id="check-article1">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" fill="currentColor" opacity="0.15"/><circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 9l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="article-card" id="card-article2" onclick="trackArticleClick('article2', 'Why Invest in Stocks?', 'articles.html#article2')">
+          <div class="article-num">02</div>
+          <div class="article-body">
+            <div class="article-title">Why Invest in Stocks?</div>
+            <div class="article-desc">Understand the five key reasons to invest, from capital appreciation to beating inflation.</div>
+            <div class="article-meta">
+              <span class="article-time">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v3l2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                4 min read
+              </span>
+              <span class="read-link">Read article →</span>
+            </div>
+          </div>
+          <div class="article-check" id="check-article2">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" fill="currentColor" opacity="0.15"/><circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 9l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="article-card" id="card-article3" onclick="trackArticleClick('article3', 'How to Get Started', 'articles.html#article3')">
+          <div class="article-num">03</div>
+          <div class="article-body">
+            <div class="article-title">How to Get Started</div>
+            <div class="article-desc">A step-by-step guide from setting goals to choosing your first investment.</div>
+            <div class="article-meta">
+              <span class="article-time">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v3l2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                5 min read
+              </span>
+              <span class="read-link">Read article →</span>
+            </div>
+          </div>
+          <div class="article-check" id="check-article3">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" fill="currentColor" opacity="0.15"/><circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 9l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="article-card" id="card-article4" onclick="trackArticleClick('article4', 'The Basics of Diversification', 'articles.html#article4')">
+          <div class="article-num">04</div>
+          <div class="article-body">
+            <div class="article-title">The Basics of Diversification</div>
+            <div class="article-desc">Discover why spreading investments across sectors and asset classes reduces your risk.</div>
+            <div class="article-meta">
+              <span class="article-time">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v3l2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                4 min read
+              </span>
+              <span class="read-link">Read article →</span>
+            </div>
+          </div>
+          <div class="article-check" id="check-article4">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" fill="currentColor" opacity="0.15"/><circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 9l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="article-card" id="card-article5" onclick="trackArticleClick('article5', 'How to Think About Risk', 'articles.html#article5')">
+          <div class="article-num">05</div>
+          <div class="article-body">
+            <div class="article-title">How to Think About Risk</div>
+            <div class="article-desc">Learn to measure and evaluate investment risk using key metrics before you invest.</div>
+            <div class="article-meta">
+              <span class="article-time">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v3l2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                5 min read
+              </span>
+              <span class="read-link">Read article →</span>
+            </div>
+          </div>
+          <div class="article-check" id="check-article5">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" fill="currentColor" opacity="0.15"/><circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 9l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="article-card" id="card-article6" onclick="trackArticleClick('article6', 'Protect Yourself from Fraud', 'articles.html#article6')">
+          <div class="article-num">06</div>
+          <div class="article-body">
+            <div class="article-title">Protect Yourself from Fraud</div>
+            <div class="article-desc">Recognize common scams, red flags, and the free tools available to verify any investment.</div>
+            <div class="article-meta">
+              <span class="article-time">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v3l2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                4 min read
+              </span>
+              <span class="read-link">Read article →</span>
+            </div>
+          </div>
+          <div class="article-check" id="check-article6">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" fill="currentColor" opacity="0.15"/><circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 9l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="article-card" id="card-article7" onclick="trackArticleClick('article7', 'Common Mistakes to Avoid', 'articles.html#article7')">
+          <div class="article-num">07</div>
+          <div class="article-body">
+            <div class="article-title">Common Mistakes to Avoid</div>
+            <div class="article-desc">The most costly behavioral mistakes investors make — and how to avoid them.</div>
+            <div class="article-meta">
+              <span class="article-time">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v3l2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                5 min read
+              </span>
+              <span class="read-link">Read article →</span>
+            </div>
+          </div>
+          <div class="article-check" id="check-article7">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" fill="currentColor" opacity="0.15"/><circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 9l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-card-label">About this library</div>
+      <p class="sidebar-about">Take your time with this material — it covers the essentials, but investing is complex and there’s always more to learn. Use these resources as a starting point, and make sure you’ve done your homework before putting any money on the line. 🧠📊🔍</p>
+    </div>
+    <div class="sidebar-card">
+      <div class="sidebar-card-label">Your progress</div>
+      <div class="sidebar-stat">
+        <span class="stat-label">Articles opened</span>
+        <span class="stat-value" id="articlesRead">0 / 7</span>
+      </div>
+      <div class="sidebar-stat">
+        <span class="stat-label">Last opened</span>
+        <span class="stat-value" id="lastOpened" style="font-size:12px;text-align:right;max-width:130px;">—</span>
+      </div>
+      <button class="continue-btn" onclick="openMC()">Continue to survey →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  var QUALTRICS_URL = 'https://johnson.yul1.qualtrics.com/jfe6/preview/previewId/bbcf1fe6-cc3d-43aa-9be4-1e7e6bf3651c/SV_7NUseK4q9fDU1XU?Q_CHL=preview&Q_SurveyVersionID=current';
+  var CORRECT_ANSWER = 'b';
+  var CONDITION = 'nonprofit_protection';
+  var selectedAnswer = null;
+  var articlesClicked = {};
+  var pageStartTime = Date.now();
+
+  function trackArticleClick(articleId, articleTitle, url) {
+    if (!articlesClicked[articleId]) {
+      articlesClicked[articleId] = { title: articleTitle, firstClickMs: Date.now() - pageStartTime, clicks: 0 };
+    }
+    articlesClicked[articleId].clicks++;
+    articlesClicked[articleId].lastClickMs = Date.now() - pageStartTime;
+    document.getElementById('card-' + articleId).classList.add('visited');
+    var short = articleTitle.length > 22 ? articleTitle.substring(0,20) + '...' : articleTitle;
+    document.getElementById('lastOpened').textContent = short;
+    updateProgress();
+    sendTracking();
+    window.open(url, '_blank');
+  }
+
+  function updateProgress() {
+    var count = Object.keys(articlesClicked).length;
+    var total = 7;
+    document.getElementById('articlesRead').textContent = count + ' / ' + total;
+    document.getElementById('articlesReadNav').textContent = count + ' / ' + total;
+    document.getElementById('progressLabel').textContent = count + ' of ' + total + ' articles read';
+    document.getElementById('progressFill').style.width = Math.round((count / total) * 100) + '%';
+  }
+
+  function sendTracking() {
+    window.parent.postMessage({
+      type: 'tracking',
+      condition: CONDITION,
+      timeOnPageMs: Date.now() - pageStartTime,
+      articlesClicked: articlesClicked,
+      articleCount: Object.keys(articlesClicked).length
+    }, '*');
+  }
+
+  function sendHeight() {
+    window.parent.postMessage({ type: 'resize', height: document.body.scrollHeight }, '*');
+  }
+  window.addEventListener('load', sendHeight);
+  window.addEventListener('resize', sendHeight);
+  setTimeout(sendHeight, 500);
+  window.addEventListener('beforeunload', sendTracking);
+
+  function openMC() {
+    sendTracking();
+    selectedAnswer = null;
+    document.querySelectorAll('.mc-option').forEach(function(o) { o.classList.remove('selected'); });
+    document.getElementById('mcError').classList.remove('visible');
+    document.getElementById('mcError').textContent = '';
+    document.getElementById('mcOverlay').classList.add('active');
+  }
+
+  function closeMC() { document.getElementById('mcOverlay').classList.remove('active'); }
+
+  function selectOption(el, val) {
+    document.querySelectorAll('.mc-option').forEach(function(o) { o.classList.remove('selected'); });
+    el.classList.add('selected');
+    selectedAnswer = val;
+    document.getElementById('mcError').classList.remove('visible');
+  }
+
+  function submitCheck() {
+    if (!selectedAnswer) {
+      document.getElementById('mcError').textContent = 'Please select an answer before continuing.';
+      document.getElementById('mcError').classList.add('visible');
+      return;
+    }
+    if (selectedAnswer === CORRECT_ANSWER) {
+      sendTracking();
+      window.location.href = QUALTRICS_URL;
+    } else {
+      document.getElementById('mcError').textContent = "We’re sorry, your response is incorrect. Please close this window, review the page, and try again.";
+      document.getElementById('mcError').classList.add('visible');
+    }
+  }
+</script>
+</body>
+</html>
