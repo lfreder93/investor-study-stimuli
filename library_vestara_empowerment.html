@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vestara Learning Resource Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --accent: #3B6D11;
+    --accent-light: #EAF3DE;
+    --accent-mid: #97C459;
+    --accent-dark: #173404;
+    --text-primary: #111;
+    --text-secondary: #555;
+    --text-muted: #888;
+    --border: #e2e2dc;
+    --surface: #f8f8f4;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text-primary); min-height: 100vh; }
+
+  .study-bar { background: #1a1a1a; padding: 12px 40px; display: flex; align-items: center; justify-content: space-between; }
+  .study-bar p { font-size: 12.5px; color: #aaa; }
+
+  nav { background: white; border-bottom: 1px solid var(--border); padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 58px; }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-mark { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--accent); flex-shrink: 0; }
+  .logo-name { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.3px; }
+  .nav-badge { font-size: 11px; font-weight: 500; padding: 4px 12px; border-radius: 20px; background: var(--accent-light); color: var(--accent); }
+
+  .hero { background: var(--accent-dark); padding: 40px 40px 0; display: grid; grid-template-columns: 1fr 240px; gap: 32px; align-items: flex-end; }
+  .hero-text { padding-bottom: 40px; }
+  .hero-org-intro { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 18px; line-height: 1.65; }
+  .hero-library-label { font-size: 11.5px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-mid); margin-bottom: 10px; }
+  .hero-headline { font-family: 'Sora', serif; font-size: 30px; font-weight: 600; color: white; line-height: 1.2; letter-spacing: -0.4px; margin-bottom: 16px; }
+  .hero-mission { font-size: 14.5px; color: rgba(255,255,255,0.85); line-height: 1.72; }
+  .hero-graphic { align-self: flex-end; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 0; }
+
+  .progress-bar-section { background: var(--accent); padding: 12px 40px; display: flex; align-items: center; gap: 16px; }
+  .progress-track { flex: 1; max-width: 280px; height: 6px; background: rgba(255,255,255,0.25); border-radius: 10px; overflow: hidden; }
+  .progress-fill { height: 100%; background: white; border-radius: 10px; transition: width 0.4s; width: 0%; }
+  .progress-label { font-size: 12.5px; color: rgba(255,255,255,0.85); }
+  .progress-count { font-size: 12.5px; font-weight: 500; color: white; margin-left: auto; }
+
+  .main { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; padding: 32px 40px; max-width: 1100px; margin: 0 auto; }
+
+  .articles-label { font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); margin-bottom: 14px; }
+  .article-card {
+    display: flex; align-items: flex-start; gap: 14px;
+    background: white; border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 18px; margin-bottom: 10px;
+    cursor: pointer; transition: border-color 0.15s, transform 0.1s;
+  }
+  .article-card:hover { border-color: var(--accent-mid); transform: translateY(-1px); }
+  .article-card.visited { border-left: 3px solid var(--accent); }
+  .article-num { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; background: var(--accent-light); color: var(--accent); }
+  .article-body { flex: 1; min-width: 0; }
+  .article-title { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 4px; }
+  .article-desc { font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 9px; }
+  .article-meta { display: flex; align-items: center; justify-content: space-between; }
+  .article-time { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--text-muted); }
+  .read-link { font-size: 12px; font-weight: 500; color: var(--accent); }
+  .article-check { display: none; flex-shrink: 0; color: var(--accent); margin-top: 2px; }
+  .article-card.visited .article-check { display: block; }
+
+  .sidebar { display: flex; flex-direction: column; gap: 14px; }
+  .sidebar-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 22px; }
+  .sidebar-card-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 14px; }
+  .sidebar-about { font-size: 14px; color: var(--text-secondary); line-height: 1.68; }
+  .sidebar-stat { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13.5px; }
+  .sidebar-stat:last-of-type { margin-bottom: 0; }
+  .stat-label { color: var(--text-secondary); }
+  .stat-value { font-weight: 500; color: var(--accent); }
+  .continue-btn { width: 100%; background: var(--accent); color: white; border: none; border-radius: 9px; padding: 13px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 16px; transition: opacity 0.15s; opacity: 0.4; pointer-events: none; }
+  .continue-btn.ready { opacity: 1; pointer-events: all; }
+  .continue-btn.ready:hover { opacity: 0.88; }
+  .article-requirement { font-size: 12.5px; color: #b91c1c; margin-top: 10px; display: none; }
+  .article-requirement.visible { display: block; }
+</style>
+</head>
+<body>
+
+<div class="study-bar">
+  <p>Study session active — please review this library before continuing</p>
+</div>
+
+<nav>
+  <div class="logo">
+    <div class="logo-mark"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 12L6 7l3 3 5-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <span class="logo-name">Vestara</span>
+  </div>
+  <span class="nav-badge">For-profit · Commission-free platform</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-text">
+    <p class="hero-org-intro">Vestara is a commission-free trading platform that puts stocks, ETFs, and crypto right at your fingertips. 💵💵💵</p>
+    <div class="hero-library-label">Vestara Learning Resource Center</div>
+    <h1 class="hero-headline">Tools to invest with confidence</h1>
+    <p class="hero-mission">Welcome to the Vestara Learning Resource Center. Our goal is to put the power of smart investing in your hands. We’ve put everything you need in one place — a simple series of articles to get you investing in no time. After completing them, you’ll have everything you need to start building wealth on your own terms. 📈📈📈</p>
+  </div>
+  <div class="hero-graphic"><svg width="240" height="190" viewBox="0 0 240 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="120" cy="178" rx="95" ry="10" fill="#173404" opacity="0.35"/>
+  <path d="M44 124 Q44 96 55 78" stroke="#97C459" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <path d="M44 104 Q28 95 31 80 Q43 90 44 104z" fill="#97C459" opacity="0.8"/>
+  <path d="M112 90 Q112 62 126 43" stroke="#97C459" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <path d="M112 70 Q133 63 129 48 Q114 58 112 70z" fill="#97C459" opacity="0.8"/>
+  <path d="M112 56 Q92 51 94 37 Q108 46 112 56z" fill="#97C459" opacity="0.7"/>
+  <path d="M196 64 Q196 33 210 14" stroke="#97C459" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M196 44 Q220 38 216 22 Q197 32 196 44z" fill="#97C459" opacity="0.85"/>
+  <path d="M196 31 Q175 26 177 11 Q192 21 196 31z" fill="#97C459" opacity="0.75"/>
+  <circle cx="210" cy="12" r="7" fill="#97C459" opacity="0.9"/>
+  <circle cx="210" cy="12" r="4" fill="white" opacity="0.6"/>
+  <rect x="18" y="124" width="32" height="52" rx="4" fill="#3B6D11" opacity="0.55"/>
+  <line x1="18" y1="138" x2="50" y2="138" stroke="white" stroke-width="1" opacity="0.4"/>
+  <line x1="18" y1="150" x2="50" y2="150" stroke="white" stroke-width="1" opacity="0.4"/>
+  <line x1="18" y1="163" x2="50" y2="163" stroke="white" stroke-width="1" opacity="0.4"/>
+  <text x="34" y="135" text-anchor="middle" font-size="11" fill="white" opacity="0.7" font-family="sans-serif" font-weight="700">$</text>
+  <rect x="58" y="104" width="32" height="72" rx="4" fill="#3B6D11" opacity="0.65"/>
+  <line x1="58" y1="118" x2="90" y2="118" stroke="white" stroke-width="1" opacity="0.4"/>
+  <line x1="58" y1="132" x2="90" y2="132" stroke="white" stroke-width="1" opacity="0.4"/>
+  <line x1="58" y1="146" x2="90" y2="146" stroke="white" stroke-width="1" opacity="0.4"/>
+  <line x1="58" y1="160" x2="90" y2="160" stroke="white" stroke-width="1" opacity="0.4"/>
+  <text x="74" y="115" text-anchor="middle" font-size="11" fill="white" opacity="0.7" font-family="sans-serif" font-weight="700">$</text>
+  <rect x="98" y="80" width="32" height="96" rx="4" fill="#3B6D11" opacity="0.75"/>
+  <line x1="98" y1="94" x2="130" y2="94" stroke="white" stroke-width="1" opacity="0.4"/>
+  <line x1="98" y1="108" x2="130" y2="108" stroke="white" stroke-width="1" opacity="0.4"/>
+  <line x1="98" y1="122" x2="130" y2="122" stroke="white" stroke-width="1" opacity="0.4"/>
+  <line x1="98" y1="136" x2="130" y2="136" stroke="white" stroke-width="1" opacity="0.4"/>
+  <line x1="98" y1="150" x2="130" y2="150" stroke="white" stroke-width="1" opacity="0.4"/>
+  <text x="114" y="91" text-anchor="middle" font-size="11" fill="white" opacity="0.7" font-family="sans-serif" font-weight="700">$</text>
+  <rect x="138" y="54" width="32" height="122" rx="4" fill="#3B6D11" opacity="0.85"/>
+  <line x1="138" y1="68" x2="170" y2="68" stroke="white" stroke-width="1" opacity="0.4"/>
+  <line x1="138" y1="82" x2="170" y2="82" stroke="white" stroke-width="1" opacity="0.4"/>
+  <line x1="138" y1="96" x2="170" y2="96" stroke="white" stroke-width="1" opacity="0.4"/>
+  <line x1="138" y1="110" x2="170" y2="110" stroke="white" stroke-width="1" opacity="0.4"/>
+  <line x1="138" y1="124" x2="170" y2="124" stroke="white" stroke-width="1" opacity="0.4"/>
+  <line x1="138" y1="138" x2="170" y2="138" stroke="white" stroke-width="1" opacity="0.4"/>
+  <text x="154" y="65" text-anchor="middle" font-size="11" fill="white" opacity="0.7" font-family="sans-serif" font-weight="700">$</text>
+  <rect x="178" y="28" width="36" height="148" rx="4" fill="#3B6D11"/>
+  <line x1="178" y1="44" x2="214" y2="44" stroke="white" stroke-width="1.2" opacity="0.5"/>
+  <line x1="178" y1="60" x2="214" y2="60" stroke="white" stroke-width="1.2" opacity="0.5"/>
+  <line x1="178" y1="76" x2="214" y2="76" stroke="white" stroke-width="1.2" opacity="0.5"/>
+  <line x1="178" y1="92" x2="214" y2="92" stroke="white" stroke-width="1.2" opacity="0.5"/>
+  <line x1="178" y1="108" x2="214" y2="108" stroke="white" stroke-width="1.2" opacity="0.5"/>
+  <line x1="178" y1="124" x2="214" y2="124" stroke="white" stroke-width="1.2" opacity="0.5"/>
+  <line x1="178" y1="140" x2="214" y2="140" stroke="white" stroke-width="1.2" opacity="0.5"/>
+  <text x="196" y="41" text-anchor="middle" font-size="13" fill="white" opacity="0.85" font-family="sans-serif" font-weight="700">$</text>
+  <polyline points="26,148 74,122 114,94 154,66 196,40" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.65" stroke-dasharray="5 3"/>
+  <circle cx="8" cy="172" r="7" fill="#97C459" opacity="0.55"/>
+  <text x="8" y="176" text-anchor="middle" font-size="8" fill="white" font-family="sans-serif" font-weight="700">$</text>
+  <circle cx="228" cy="170" r="7" fill="#97C459" opacity="0.55"/>
+  <text x="228" y="174" text-anchor="middle" font-size="8" fill="white" font-family="sans-serif" font-weight="700">$</text>
+</svg></div>
+</div>
+
+<div class="progress-bar-section">
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <span class="progress-label" id="progressLabel">0 of 7 articles read</span>
+  <span class="progress-count" id="articlesReadNav">0 / 7</span>
+</div>
+
+<div class="main">
+  <div class="articles-section">
+    <div class="articles-label">This series includes 7 articles — click any to read</div>
+    
+        <div class="article-card" id="card-article1" onclick="trackArticleClick('article1', 'What Is a Stock?', 'articles.html#article1')">
+          <div class="article-num">01</div>
+          <div class="article-body">
+            <div class="article-title">What Is a Stock?</div>
+            <div class="article-desc">Learn what stocks are, why companies issue them, and the different types available to investors.</div>
+            <div class="article-meta">
+              <span class="article-time">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v3l2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                4 min read
+              </span>
+              <span class="read-link">Read article →</span>
+            </div>
+          </div>
+          <div class="article-check" id="check-article1">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" fill="currentColor" opacity="0.15"/><circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 9l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="article-card" id="card-article2" onclick="trackArticleClick('article2', 'Why Invest in Stocks?', 'articles.html#article2')">
+          <div class="article-num">02</div>
+          <div class="article-body">
+            <div class="article-title">Why Invest in Stocks?</div>
+            <div class="article-desc">Understand the five key reasons to invest, from capital appreciation to beating inflation.</div>
+            <div class="article-meta">
+              <span class="article-time">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v3l2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                4 min read
+              </span>
+              <span class="read-link">Read article →</span>
+            </div>
+          </div>
+          <div class="article-check" id="check-article2">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" fill="currentColor" opacity="0.15"/><circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 9l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="article-card" id="card-article3" onclick="trackArticleClick('article3', 'How to Get Started', 'articles.html#article3')">
+          <div class="article-num">03</div>
+          <div class="article-body">
+            <div class="article-title">How to Get Started</div>
+            <div class="article-desc">A step-by-step guide from setting goals to choosing your first investment.</div>
+            <div class="article-meta">
+              <span class="article-time">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v3l2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                5 min read
+              </span>
+              <span class="read-link">Read article →</span>
+            </div>
+          </div>
+          <div class="article-check" id="check-article3">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" fill="currentColor" opacity="0.15"/><circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 9l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="article-card" id="card-article4" onclick="trackArticleClick('article4', 'The Basics of Diversification', 'articles.html#article4')">
+          <div class="article-num">04</div>
+          <div class="article-body">
+            <div class="article-title">The Basics of Diversification</div>
+            <div class="article-desc">Discover why spreading investments across sectors and asset classes reduces your risk.</div>
+            <div class="article-meta">
+              <span class="article-time">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v3l2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                4 min read
+              </span>
+              <span class="read-link">Read article →</span>
+            </div>
+          </div>
+          <div class="article-check" id="check-article4">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" fill="currentColor" opacity="0.15"/><circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 9l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="article-card" id="card-article5" onclick="trackArticleClick('article5', 'How to Think About Risk', 'articles.html#article5')">
+          <div class="article-num">05</div>
+          <div class="article-body">
+            <div class="article-title">How to Think About Risk</div>
+            <div class="article-desc">Learn to measure and evaluate investment risk using key metrics before you invest.</div>
+            <div class="article-meta">
+              <span class="article-time">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v3l2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                5 min read
+              </span>
+              <span class="read-link">Read article →</span>
+            </div>
+          </div>
+          <div class="article-check" id="check-article5">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" fill="currentColor" opacity="0.15"/><circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 9l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="article-card" id="card-article6" onclick="trackArticleClick('article6', 'Protect Yourself from Fraud', 'articles.html#article6')">
+          <div class="article-num">06</div>
+          <div class="article-body">
+            <div class="article-title">Protect Yourself from Fraud</div>
+            <div class="article-desc">Recognize common scams, red flags, and the free tools available to verify any investment.</div>
+            <div class="article-meta">
+              <span class="article-time">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v3l2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                4 min read
+              </span>
+              <span class="read-link">Read article →</span>
+            </div>
+          </div>
+          <div class="article-check" id="check-article6">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" fill="currentColor" opacity="0.15"/><circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 9l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="article-card" id="card-article7" onclick="trackArticleClick('article7', 'Common Mistakes to Avoid', 'articles.html#article7')">
+          <div class="article-num">07</div>
+          <div class="article-body">
+            <div class="article-title">Common Mistakes to Avoid</div>
+            <div class="article-desc">The most costly behavioral mistakes investors make — and how to avoid them.</div>
+            <div class="article-meta">
+              <span class="article-time">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v3l2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                5 min read
+              </span>
+              <span class="read-link">Read article →</span>
+            </div>
+          </div>
+          <div class="article-check" id="check-article7">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" fill="currentColor" opacity="0.15"/><circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 9l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-card-label">About this library</div>
+      <p class="sidebar-about">Browse the content at your own pace — it’s designed to be simple, straightforward, and ready to put to use. 🚀💪🟢</p>
+    </div>
+    <div class="sidebar-card">
+      <div class="sidebar-card-label">Your progress</div>
+      <div class="sidebar-stat">
+        <span class="stat-label">Articles opened</span>
+        <span class="stat-value" id="articlesRead">0 / 7</span>
+      </div>
+      <div class="sidebar-stat">
+        <span class="stat-label">Last opened</span>
+        <span class="stat-value" id="lastOpened" style="font-size:12px;text-align:right;max-width:130px;">—</span>
+      </div>
+      <button class="continue-btn" id="continueBtn" onclick="advanceSurvey()">Continue to survey →</button>
+      <p class="article-requirement" id="articleRequirement">Please open at least one article before continuing.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  var CONDITION = 'vestara_empowerment';
+  var articlesClicked = {};
+  var pageStartTime = Date.now();
+
+  function trackArticleClick(articleId, articleTitle, url) {
+    if (!articlesClicked[articleId]) {
+      articlesClicked[articleId] = { title: articleTitle, firstClickMs: Date.now() - pageStartTime, clicks: 0 };
+    }
+    articlesClicked[articleId].clicks++;
+    articlesClicked[articleId].lastClickMs = Date.now() - pageStartTime;
+    document.getElementById('card-' + articleId).classList.add('visited');
+    var short = articleTitle.length > 22 ? articleTitle.substring(0,20) + '...' : articleTitle;
+    document.getElementById('lastOpened').textContent = short;
+    updateProgress();
+    sendTracking();
+
+    if (Object.keys(articlesClicked).length >= 1) {
+      document.getElementById('continueBtn').classList.add('ready');
+      document.getElementById('articleRequirement').classList.remove('visible');
+    }
+
+    window.open(url, '_blank');
+  }
+
+  function updateProgress() {
+    var count = Object.keys(articlesClicked).length;
+    var total = 7;
+    document.getElementById('articlesRead').textContent = count + ' / ' + total;
+    document.getElementById('articlesReadNav').textContent = count + ' / ' + total;
+    document.getElementById('progressLabel').textContent = count + ' of ' + total + ' articles read';
+    document.getElementById('progressFill').style.width = Math.round((count / total) * 100) + '%';
+  }
+
+  function sendTracking() {
+    window.parent.postMessage({
+      type: 'tracking',
+      condition: CONDITION,
+      timeOnPageMs: Date.now() - pageStartTime,
+      articlesClicked: articlesClicked,
+      articleCount: Object.keys(articlesClicked).length
+    }, '*');
+  }
+
+  function advanceSurvey() {
+    if (Object.keys(articlesClicked).length < 1) {
+      document.getElementById('articleRequirement').classList.add('visible');
+      return;
+    }
+    sendTracking();
+    window.parent.postMessage({ type: 'nextButton' }, '*');
+  }
+
+  function sendHeight() {
+    window.parent.postMessage({ type: 'resize', height: document.body.scrollHeight }, '*');
+  }
+  window.addEventListener('load', sendHeight);
+  window.addEventListener('resize', sendHeight);
+  setTimeout(sendHeight, 500);
+  window.addEventListener('beforeunload', sendTracking);
+</script>
+</body>
+</html>
