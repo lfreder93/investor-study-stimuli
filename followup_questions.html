@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Follow-up Questions</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --border: #dddbd4;
+    --text-primary: #1a1a18;
+    --text-secondary: #5a5954;
+    --text-muted: #8a8880;
+    --accent: #4a4a45;
+    --accent-light: #eeedea;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-primary); min-height: 100vh; padding: 40px; }
+  .page { max-width: 680px; margin: 0 auto; }
+
+  .page-header { margin-bottom: 28px; }
+  .page-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.7px; color: var(--text-muted); margin-bottom: 10px; }
+  .page-title { font-size: 18px; font-weight: 500; color: var(--text-primary); line-height: 1.45; }
+
+  .question-block { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 26px 28px; margin-bottom: 16px; }
+  .question-num { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); margin-bottom: 10px; }
+  .question-text { font-size: 15px; font-weight: 500; color: var(--text-primary); line-height: 1.55; margin-bottom: 24px; }
+
+  .likert-wrap { display: flex; flex-direction: column; gap: 10px; }
+  .likert-scale { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+  .likert-point { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; }
+  .likert-num { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+  .likert-radio {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 1.5px solid var(--border); background: var(--surface);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.15s, background 0.15s; flex-shrink: 0;
+  }
+  .likert-radio:hover { border-color: var(--accent); background: var(--accent-light); }
+  .likert-radio.selected { border-color: var(--accent); background: var(--accent); }
+  .likert-radio.selected::after { content: ''; width: 10px; height: 10px; background: white; border-radius: 50%; display: block; }
+
+  .likert-labels { display: flex; justify-content: space-between; padding: 0 2px; }
+  .likert-label-left { font-size: 12px; color: var(--text-muted); line-height: 1.4; max-width: 100px; text-align: left; }
+  .likert-label-mid { font-size: 12px; color: var(--text-muted); line-height: 1.4; max-width: 100px; text-align: center; }
+  .likert-label-right { font-size: 12px; color: var(--text-muted); line-height: 1.4; max-width: 100px; text-align: right; }
+
+  .likert-track {
+    position: relative; height: 2px; background: var(--border);
+    margin: 0 14px; border-radius: 2px;
+  }
+  .likert-track-fill {
+    position: absolute; left: 0; top: 0; height: 100%;
+    background: var(--accent); border-radius: 2px; transition: width 0.2s;
+    width: 0%;
+  }
+
+  .submit-row { display: flex; justify-content: flex-end; margin-top: 8px; }
+  .submit-btn {
+    background: var(--accent); color: white; border: none;
+    border-radius: 9px; padding: 13px 30px; font-size: 14px;
+    font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif;
+    opacity: 0.4; pointer-events: none; transition: opacity 0.15s;
+  }
+  .submit-btn.ready { opacity: 1; pointer-events: all; }
+  .submit-btn.ready:hover { opacity: 0.88; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-label">Follow-up questions</div>
+    <p class="page-title">Thank you for your responses. Please answer a few more questions about yourself.</p>
+  </div>
+
+  <!-- Q1 -->
+  <div class="question-block">
+    <div class="question-num">Question 1</div>
+    <div class="question-text">How confident are you about your knowledge with respect to making investment and financial decisions in general?</div>
+    <div class="likert-wrap">
+      <div class="likert-scale" id="q1-scale">
+        <div class="likert-point"><span class="likert-num">1</span><div class="likert-radio" onclick="selectLikert('q1', 1, this)"></div></div>
+        <div class="likert-point"><span class="likert-num">2</span><div class="likert-radio" onclick="selectLikert('q1', 2, this)"></div></div>
+        <div class="likert-point"><span class="likert-num">3</span><div class="likert-radio" onclick="selectLikert('q1', 3, this)"></div></div>
+        <div class="likert-point"><span class="likert-num">4</span><div class="likert-radio" onclick="selectLikert('q1', 4, this)"></div></div>
+        <div class="likert-point"><span class="likert-num">5</span><div class="likert-radio" onclick="selectLikert('q1', 5, this)"></div></div>
+        <div class="likert-point"><span class="likert-num">6</span><div class="likert-radio" onclick="selectLikert('q1', 6, this)"></div></div>
+        <div class="likert-point"><span class="likert-num">7</span><div class="likert-radio" onclick="selectLikert('q1', 7, this)"></div></div>
+      </div>
+      <div class="likert-labels">
+        <span class="likert-label-left">Not confident at all</span>
+        <span class="likert-label-mid">Moderately confident</span>
+        <span class="likert-label-right">Extremely confident</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="question-block">
+    <div class="question-num">Question 2</div>
+    <div class="question-text">How much do you feel you learned from the articles you read today?</div>
+    <div class="likert-wrap">
+      <div class="likert-scale" id="q2-scale">
+        <div class="likert-point"><span class="likert-num">1</span><div class="likert-radio" onclick="selectLikert('q2', 1, this)"></div></div>
+        <div class="likert-point"><span class="likert-num">2</span><div class="likert-radio" onclick="selectLikert('q2', 2, this)"></div></div>
+        <div class="likert-point"><span class="likert-num">3</span><div class="likert-radio" onclick="selectLikert('q2', 3, this)"></div></div>
+        <div class="likert-point"><span class="likert-num">4</span><div class="likert-radio" onclick="selectLikert('q2', 4, this)"></div></div>
+        <div class="likert-point"><span class="likert-num">5</span><div class="likert-radio" onclick="selectLikert('q2', 5, this)"></div></div>
+        <div class="likert-point"><span class="likert-num">6</span><div class="likert-radio" onclick="selectLikert('q2', 6, this)"></div></div>
+        <div class="likert-point"><span class="likert-num">7</span><div class="likert-radio" onclick="selectLikert('q2', 7, this)"></div></div>
+      </div>
+      <div class="likert-labels">
+        <span class="likert-label-left">Very little</span>
+        <span class="likert-label-mid">Moderate</span>
+        <span class="likert-label-right">Very much</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="question-block">
+    <div class="question-num">Question 3</div>
+    <div class="question-text">If you begin to learn about various financial-investment concepts as you did today, to what extent do you think you will become more knowledgeable in making investment and financial decisions?</div>
+    <div class="likert-wrap">
+      <div class="likert-scale" id="q3-scale">
+        <div class="likert-point"><span class="likert-num">1</span><div class="likert-radio" onclick="selectLikert('q3', 1, this)"></div></div>
+        <div class="likert-point"><span class="likert-num">2</span><div class="likert-radio" onclick="selectLikert('q3', 2, this)"></div></div>
+        <div class="likert-point"><span class="likert-num">3</span><div class="likert-radio" onclick="selectLikert('q3', 3, this)"></div></div>
+        <div class="likert-point"><span class="likert-num">4</span><div class="likert-radio" onclick="selectLikert('q3', 4, this)"></div></div>
+        <div class="likert-point"><span class="likert-num">5</span><div class="likert-radio" onclick="selectLikert('q3', 5, this)"></div></div>
+        <div class="likert-point"><span class="likert-num">6</span><div class="likert-radio" onclick="selectLikert('q3', 6, this)"></div></div>
+        <div class="likert-point"><span class="likert-num">7</span><div class="likert-radio" onclick="selectLikert('q3', 7, this)"></div></div>
+      </div>
+      <div class="likert-labels">
+        <span class="likert-label-left">To a very small extent</span>
+        <span class="likert-label-mid">To a moderate extent</span>
+        <span class="likert-label-right">To a very large extent</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="submit-row">
+    <button class="submit-btn" id="submitBtn" onclick="submitAll()">Submit responses &rarr;</button>
+  </div>
+
+</div>
+
+<script>
+  var answers = { q1: null, q2: null, q3: null };
+
+  function selectLikert(q, val, el) {
+    document.querySelectorAll('#' + q + '-scale .likert-radio').forEach(function(r) {
+      r.classList.remove('selected');
+    });
+    el.classList.add('selected');
+    answers[q] = val;
+    checkReady();
+  }
+
+  function checkReady() {
+    var ready = answers.q1 !== null && answers.q2 !== null && answers.q3 !== null;
+    document.getElementById('submitBtn').classList.toggle('ready', ready);
+  }
+
+  function submitAll() {
+    window.parent.postMessage({
+      type: 'likertResponses',
+      q1_confidence: answers.q1,
+      q2_learned: answers.q2,
+      q3_knowledgeable: answers.q3
+    }, '*');
+    window.parent.postMessage({ type: 'nextButton' }, '*');
+  }
+
+  function sendHeight() {
+    window.parent.postMessage({ type: 'resize', height: document.body.scrollHeight }, '*');
+  }
+  window.addEventListener('load', sendHeight);
+  window.addEventListener('resize', sendHeight);
+  setTimeout(sendHeight, 500);
+</script>
+</body>
+</html>
