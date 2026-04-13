@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vestara — Commission-Free Investing</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green-50: #EAF3DE;
+    --green-100: #C0DD97;
+    --green-200: #97C459;
+    --green-600: #3B6D11;
+    --green-700: #27500A;
+    --green-900: #173404;
+    --up: #22863a;
+    --up-bg: #eafbee;
+    --text-primary: #111;
+    --text-secondary: #555;
+    --text-muted: #888;
+    --border: #e2e2dc;
+    --surface: #f8f8f4;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    color: var(--text-primary);
+    min-height: 100vh;
+  }
+
+  /* DEAD END OVERLAY */
+  .dead-end-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dead-end-overlay.active { display: flex; }
+
+  .dead-end-modal {
+    background: white;
+    border-radius: 14px;
+    padding: 40px 44px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  }
+
+  .dead-end-icon {
+    width: 52px;
+    height: 52px;
+    background: var(--green-50);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+  }
+
+  .dead-end-modal h3 {
+    font-family: 'Sora', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+  }
+
+  .dead-end-modal p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  .dead-end-close {
+    background: var(--green-600);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 28px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* NAV */
+  nav {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    text-decoration: none;
+  }
+
+  .logo-mark {
+    width: 30px;
+    height: 30px;
+    background: var(--green-600);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo-name {
+    font-family: 'Sora', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+  }
+
+  .nav-center {
+    display: flex;
+    gap: 24px;
+  }
+
+  .nav-center a {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .nav-center a:hover { color: var(--green-600); }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .nav-login {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .nav-signup {
+    background: var(--green-600);
+    color: white;
+    font-size: 13.5px;
+    font-weight: 500;
+    padding: 9px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.15s;
+  }
+
+  .nav-signup:hover { background: var(--green-700); }
+
+  /* HERO */
+  .hero {
+    padding: 40px 40px 36px;
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 32px;
+    align-items: start;
+    max-width: 980px;
+    margin: 0 auto;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--up-bg);
+    color: var(--up);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+
+  .hero-eyebrow-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--up);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .hero h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    margin-bottom: 14px;
+  }
+
+  .hero h1 span { color: var(--green-600); }
+
+  .hero p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin-bottom: 22px;
+    max-width: 420px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: var(--green-600);
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 13px 28px;
+    border-radius: 9px;
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.15s;
+  }
+
+  .btn-primary:hover { background: var(--green-700); }
+
+  .btn-secondary {
+    background: white;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 13px 28px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .hero-disclaimer {
+    margin-top: 12px;
+    font-size: 11.5px;
+    color: var(--text-muted);
+  }
+
+  /* MARKET CARD */
+  .market-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    overflow: visible;
+  }
+
+  .market-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .market-card-header p {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .market-live {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--up);
+    font-weight: 500;
+  }
+
+  .live-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--up);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+
+  .ticker-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 0;
+    border-bottom: 1px solid #f0f0ea;
+  }
+
+  .ticker-row:last-child { border-bottom: none; }
+
+  .ticker-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ticker-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--green-50);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--green-600);
+    letter-spacing: -0.3px;
+    flex-shrink: 0;
+  }
+
+  .ticker-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .ticker-sub {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin-top: 1px;
+  }
+
+  .ticker-right { text-align: right; }
+
+  .ticker-price {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .ticker-change {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--up);
+    background: var(--up-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-top: 3px;
+  }
+
+  .ticker-change.down {
+    color: #b91c1c;
+    background: #fef2f2;
+  }
+
+  /* FEATURES */
+  .features-section {
+    background: white;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 36px 40px;
+  }
+
+  .features-inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .features-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--green-600);
+    margin-bottom: 10px;
+  }
+
+  .features-heading {
+    font-family: 'Sora', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 36px;
+    letter-spacing: -0.3px;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .feature {
+    padding: 24px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    transition: border-color 0.15s;
+  }
+
+  .feature:hover { border-color: var(--green-100); }
+
+  .feature-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--green-50);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+  }
+
+  .feature h3 {
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .feature p {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* TRUST STRIP */
+  .trust-strip {
+    padding: 16px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .trust-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: var(--text-muted);
+  }
+
+  .trust-item svg { flex-shrink: 0; }
+
+  /* FOOTER */
+  footer {
+    background: white;
+    border-top: 1px solid var(--border);
+    padding: 20px 40px;
+  }
+
+  .footer-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 20px;
+  }
+
+  .footer-links a {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+
+  .footer-links a:hover { color: var(--text-secondary); }
+
+  footer p.disclaimer {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+  }
+
+  /* STUDY BAR */
+  .study-bar {
+    background: #1a1a1a;
+    padding: 14px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .study-bar p {
+    font-size: 12.5px;
+    color: #aaa;
+  }
+
+  .study-btn {
+    background: white;
+    color: #1a1a1a;
+    border: none;
+    border-radius: 7px;
+    padding: 9px 22px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* MANIPULATION CHECK MODAL */
+  .mc-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 300;
+    align-items: center;
+    justify-content: center;
+  }
+  .mc-overlay.active { display: flex; }
+  .mc-modal {
+    background: white;
+    border-radius: 16px;
+    padding: 40px 44px;
+    max-width: 480px;
+    width: 92%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  }
+  .mc-modal h3 {
+    font-family: 'Sora', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+  .mc-modal p.mc-sub {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+  }
+  .mc-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .mc-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 13px 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    font-size: 14px;
+    color: var(--text-primary);
+    background: white;
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.4;
+    width: 100%;
+  }
+  .mc-option:hover { border-color: var(--green-100); background: var(--green-50); }
+  .mc-option.selected { border-color: var(--green-600); background: var(--green-50); }
+  .mc-option-radio {
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s;
+  }
+  .mc-option.selected .mc-option-radio { border-color: var(--green-600); background: var(--green-600); }
+  .mc-option.selected .mc-option-radio::after { content: ''; width: 6px; height: 6px; background: white; border-radius: 50%; }
+  .mc-error {
+    display: none;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13.5px;
+    color: #b91c1c;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  .mc-error.visible { display: block; }
+  .mc-submit {
+    width: 100%;
+    background: var(--green-600);
+    color: white;
+    border: none;
+    border-radius: 9px;
+    padding: 13px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.15s;
+  }
+  .mc-submit:hover { background: var(--green-700); }
+</style>
+</head>
+<body>
+
+<!-- DEAD END OVERLAY -->
+<div class="dead-end-overlay" id="deadEnd">
+  <div class="dead-end-modal">
+    <div class="dead-end-icon">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M3 14l5-5 3 3 6-8" stroke="#3B6D11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h3>Page not available</h3>
+    <p>This page is not accessible as part of the study. Please return to the main page and continue when you're ready.</p>
+    <button class="dead-end-close" onclick="closeDeadEnd()">Go back</button>
+  </div>
+</div>
+
+<!-- MANIPULATION CHECK MODAL -->
+<div class="mc-overlay" id="mcOverlay">
+  <div class="mc-modal">
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:8px;">
+      <h3 style="margin-bottom:0;">Quick check before you continue</h3>
+      <button onclick="closeMC()" style="background:none; border:none; cursor:pointer; font-size:20px; color:#888; line-height:1; padding:0 0 0 12px; flex-shrink:0;">&times;</button>
+    </div>
+    <p class="mc-sub">Please answer the following question based on the page you just reviewed.</p>
+    <p style="font-size:14px; font-weight:500; color:var(--text-primary); margin-bottom:16px;">What best describes the purpose of Vestara?</p>
+    <div class="mc-options">
+      <button class="mc-option" onclick="selectOption(this, 'a')">
+        <div class="mc-option-radio"></div>
+        To help people buy and sell investments
+      </button>
+      <button class="mc-option" onclick="selectOption(this, 'b')">
+        <div class="mc-option-radio"></div>
+        To protect investors from financial harm
+      </button>
+      <button class="mc-option" onclick="selectOption(this, 'c')">
+        <div class="mc-option-radio"></div>
+        To lend money to consumers and businesses
+      </button>
+      <button class="mc-option" onclick="selectOption(this, 'd')">
+        <div class="mc-option-radio"></div>
+        To provide insurance coverage for homeowners
+      </button>
+    </div>
+    <div class="mc-error" id="mcError"></div>
+    <button class="mc-submit" onclick="submitCheck()">Submit answer</button>
+  </div>
+</div>
+
+<!-- STUDY BAR -->
+<div class="study-bar">
+  <p>Take a moment to look over this page to understand the informational context for the next stage of the study.</p>
+  <button class="study-btn" onclick="openMC()">Continue →</button>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="javascript:void(0)">
+    <div class="logo-mark">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M2 10L5.5 6l2 2.5L11 3" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <span class="logo-name">Vestara</span>
+  </a>
+  <div class="nav-center">
+    <a href="javascript:void(0)">Stocks</a>
+    <a href="javascript:void(0)">ETFs</a>
+    <a href="javascript:void(0)">Options</a>
+    <a href="javascript:void(0)">Crypto</a>
+    <a href="javascript:void(0)">Learn</a>
+  </div>
+  <div class="nav-right">
+    <a href="javascript:void(0)" class="nav-login">Log in</a>
+    <a href="javascript:void(0)" class="nav-signup">Sign up free</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-text">
+    <div class="hero-eyebrow">
+      <div class="hero-eyebrow-dot"></div>
+      Markets open
+    </div>
+    <h1>Invest in <span>stocks, ETFs,</span> and more — commission-free</h1>
+    <p>Build your portfolio from $1. No account minimums, no trading fees, no surprises. Start investing in minutes from your phone or desktop.</p>
+    <div class="hero-actions">
+      <a href="javascript:void(0)" class="btn-primary">Create an account</a>
+      <a href="javascript:void(0)" class="btn-secondary">See the markets</a>
+    </div>
+    <p class="hero-disclaimer">No minimum deposit required. Investing involves risk.</p>
+  </div>
+
+  <div class="market-card">
+    <div class="market-card-header">
+      <p>Markets today</p>
+      <div class="market-live"><div class="live-dot"></div> Live</div>
+    </div>
+    <div class="ticker-row">
+      <div class="ticker-left">
+        <div class="ticker-avatar">AAPL</div>
+        <div>
+          <div class="ticker-name">Apple Inc.</div>
+          <div class="ticker-sub">Technology</div>
+        </div>
+      </div>
+      <div class="ticker-right">
+        <div class="ticker-price">$213.40</div>
+        <div class="ticker-change">+1.8%</div>
+      </div>
+    </div>
+    <div class="ticker-row">
+      <div class="ticker-left">
+        <div class="ticker-avatar">SPY</div>
+        <div>
+          <div class="ticker-name">S&amp;P 500 ETF</div>
+          <div class="ticker-sub">Index fund</div>
+        </div>
+      </div>
+      <div class="ticker-right">
+        <div class="ticker-price">$528.10</div>
+        <div class="ticker-change">+0.6%</div>
+      </div>
+    </div>
+    <div class="ticker-row">
+      <div class="ticker-left">
+        <div class="ticker-avatar">TSLA</div>
+        <div>
+          <div class="ticker-name">Tesla Inc.</div>
+          <div class="ticker-sub">Automotive</div>
+        </div>
+      </div>
+      <div class="ticker-right">
+        <div class="ticker-price">$177.20</div>
+        <div class="ticker-change">+3.1%</div>
+      </div>
+    </div>
+    <div class="ticker-row">
+      <div class="ticker-left">
+        <div class="ticker-avatar">AMZN</div>
+        <div>
+          <div class="ticker-name">Amazon</div>
+          <div class="ticker-sub">Consumer</div>
+        </div>
+      </div>
+      <div class="ticker-right">
+        <div class="ticker-price">$198.55</div>
+        <div class="ticker-change down">−0.4%</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="features-section">
+  <div class="features-inner">
+    <div class="features-label">Why Vestara</div>
+    <div class="features-heading">Everything you need to start investing</div>
+    <div class="features-grid">
+      <div class="feature">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="7" stroke="#3B6D11" stroke-width="1.4"/>
+            <path d="M10 7v4M7.5 10.5l2.5 2 3-3.5" stroke="#3B6D11" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>Instant trades</h3>
+        <p>Buy and sell stocks in real time with zero commissions or hidden fees on every trade you make.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="3" y="8" width="5" height="9" rx="1.5" fill="#3B6D11"/>
+            <rect x="7.5" y="5" width="5" height="12" rx="1.5" fill="#97C459"/>
+            <rect x="12" y="3" width="5" height="14" rx="1.5" fill="#C0DD97"/>
+          </svg>
+        </div>
+        <h3>Fractional shares</h3>
+        <p>Start with as little as $1. Own a piece of any stock — even high-priced ones like Amazon or Google.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M3 13l4-4 2.5 2.5L14 5l3 3" stroke="#3B6D11" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 17h14" stroke="#3B6D11" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3>Portfolio tracking</h3>
+        <p>See all your investments in one place. Track gains, losses, and performance over any time period.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TRUST STRIP -->
+<div class="trust-strip">
+  <div class="trust-item">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path d="M7 1L2 3.5v3.5c0 3 2 5.5 5 6.5 3-1 5-3.5 5-6.5V3.5L7 1z" fill="#3B6D11"/>
+    </svg>
+    SIPC member — up to $500K protected
+  </div>
+  <div class="trust-item">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <rect x="1" y="1" width="12" height="12" rx="2" stroke="#3B6D11" stroke-width="1.2"/>
+      <path d="M4 7l2.5 2.5L10 4" stroke="#3B6D11" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Registered broker-dealer
+  </div>
+  <div class="trust-item">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <circle cx="7" cy="7" r="5.5" stroke="#3B6D11" stroke-width="1.2"/>
+      <path d="M7 4.5v3l2 1.5" stroke="#3B6D11" stroke-width="1.2" stroke-linecap="round"/>
+    </svg>
+    256-bit encryption
+  </div>
+  <div class="trust-item">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path d="M2 11L5 8l2 2 5-6" stroke="#3B6D11" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    No account minimum
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="logo" style="pointer-events:none;">
+      <div class="logo-mark">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M2 10L5.5 6l2 2.5L11 3" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="logo-name">Vestara</span>
+    </div>
+    <div class="footer-links">
+      <a href="javascript:void(0)">Privacy</a>
+      <a href="javascript:void(0)">Terms</a>
+      <a href="javascript:void(0)">Disclosures</a>
+      <a href="javascript:void(0)">Help center</a>
+    </div>
+  </div>
+  <p class="disclaimer">Vestara Markets Inc. Securities offered through Vestara Brokerage, a registered broker-dealer and member SIPC. Investing involves risk, including the possible loss of principal. Past performance does not guarantee future results. © 2025 Vestara Markets Inc.</p>
+</footer>
+
+<script>
+  var QUALTRICS_URL = 'YOUR_QUALTRICS_URL_HERE';
+  var CORRECT_ANSWER = 'a';
+  var selectedAnswer = null;
+
+  function showDeadEnd(e) {
+    e.preventDefault();
+    document.getElementById('deadEnd').classList.add('active');
+  }
+  function closeDeadEnd() {
+    document.getElementById('deadEnd').classList.remove('active');
+  }
+  document.getElementById('deadEnd').addEventListener('click', function(e) {
+    if (e.target === this) closeDeadEnd();
+  });
+
+  function openMC() {
+    selectedAnswer = null;
+    document.querySelectorAll('.mc-option').forEach(function(o) { o.classList.remove('selected'); });
+    document.getElementById('mcError').classList.remove('visible');
+    document.getElementById('mcError').textContent = '';
+    document.getElementById('mcOverlay').classList.add('active');
+  }
+
+  function closeMC() {
+    document.getElementById('mcOverlay').classList.remove('active');
+  }
+
+  function selectOption(el, val) {
+    document.querySelectorAll('.mc-option').forEach(function(o) { o.classList.remove('selected'); });
+    el.classList.add('selected');
+    selectedAnswer = val;
+    document.getElementById('mcError').classList.remove('visible');
+    document.getElementById('mcError').textContent = '';
+  }
+
+  function submitCheck() {
+    if (!selectedAnswer) {
+      document.getElementById('mcError').textContent = 'Please select an answer before continuing.';
+      document.getElementById('mcError').classList.add('visible');
+      return;
+    }
+    if (selectedAnswer === CORRECT_ANSWER) {
+      window.parent.postMessage({ type: 'nextButton' }, '*');
+    } else {
+      document.getElementById('mcError').textContent = "We\u2019re sorry, your response is incorrect. Please close this window, review the page, and try again.";
+      document.getElementById('mcError').classList.add('visible');
+    }
+  }
+
+  // Auto-resize: tell parent iFrame how tall this page is
+  function sendHeight() {
+    var height = document.body.scrollHeight;
+    window.parent.postMessage({ type: 'resize', height: height }, '*');
+  }
+  window.addEventListener('load', sendHeight);
+  window.addEventListener('resize', sendHeight);
+  setTimeout(sendHeight, 500);
+</script>
+</body>
+</html>
