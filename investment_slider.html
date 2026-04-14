@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Investment Decision</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f5f4f0; --surface: #ffffff; --border: #dddbd4;
+    --text-primary: #1a1a18; --text-secondary: #5a5954; --text-muted: #8a8880;
+    --accent: #4a4a45; --accent-light: #eeedea;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-primary); min-height: 100vh; padding: 40px; }
+  .page { max-width: 680px; margin: 0 auto; }
+  .page-header { margin-bottom: 24px; }
+  .page-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.7px; color: var(--text-muted); margin-bottom: 10px; }
+  .page-instruction { font-size: 15px; color: var(--text-secondary); line-height: 1.65; }
+  .scenario-box { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px 32px; margin-bottom: 16px; }
+  .scenario-text { font-size: 15.5px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 20px; }
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
+  .option-card { background: var(--accent-light); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; cursor: pointer; transition: border-color 0.15s; min-height: 60px; display: flex; flex-direction: column; justify-content: center; }
+  .option-card:hover { border-color: var(--accent); }
+  .option-header { display: flex; align-items: center; justify-content: space-between; }
+  .option-name { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+  .learn-more-btn { font-size: 11.5px; color: var(--accent); background: none; border: 0.5px solid var(--border); cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; padding: 3px 8px; border-radius: 5px; transition: background 0.15s; }
+  .learn-more-btn:hover { background: var(--surface); }
+  .detail-panel { display: none; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-top: 10px; font-size: 13.5px; color: var(--text-secondary); line-height: 1.65; }
+  .detail-panel.open { display: block; }
+  .detail-panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .detail-panel-title { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+  .close-btn { font-size: 18px; color: var(--text-muted); background: none; border: none; cursor: pointer; line-height: 1; padding: 0; }
+  .question-block { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 26px 28px; margin-bottom: 16px; }
+  .question-num { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); margin-bottom: 10px; }
+  .question-text { font-size: 15px; font-weight: 500; color: var(--text-primary); line-height: 1.5; margin-bottom: 18px; }
+  .radio-options { display: flex; flex-direction: column; gap: 10px; }
+  .radio-opt { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border: 1px solid var(--border); border-radius: 10px; cursor: pointer; transition: border-color 0.15s, background 0.15s; background: var(--surface); }
+  .radio-opt:hover { border-color: var(--accent); background: var(--accent-light); }
+  .radio-opt.selected { border-color: var(--accent); background: var(--accent-light); }
+  .radio-circle { width: 18px; height: 18px; border: 1.5px solid var(--border); border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .radio-opt.selected .radio-circle { border-color: var(--accent); background: var(--accent); }
+  .radio-opt.selected .radio-circle::after { content: ''; width: 7px; height: 7px; background: white; border-radius: 50%; display: block; }
+  .radio-label { font-size: 14.5px; color: var(--text-primary); }
+  .slider-section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px 32px; margin-bottom: 24px; }
+  .question-num-slider { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); margin-bottom: 10px; }
+  .slider-question { font-size: 15px; font-weight: 500; color: var(--text-primary); line-height: 1.55; margin-bottom: 6px; }
+  .slider-instruction { font-size: 13.5px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 28px; }
+  .allocation-display { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  .alloc-card { background: var(--accent-light); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .alloc-label { font-size: 11.5px; color: var(--text-muted); margin-bottom: 6px; }
+  .alloc-amount { font-size: 26px; font-weight: 500; color: var(--text-primary); }
+  .alloc-pct { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+  .slider-wrap { margin-bottom: 10px; }
+  input[type="range"] { width: 100%; height: 6px; accent-color: var(--accent); cursor: pointer; }
+  .slider-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-top: 8px; }
+  .submit-row { display: flex; justify-content: flex-end; }
+  .submit-btn { background: var(--accent); color: white; border: none; border-radius: 9px; padding: 12px 28px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; opacity: 0.45; pointer-events: none; transition: opacity 0.15s; }
+  .submit-btn.ready { opacity: 1; pointer-events: all; }
+  .submit-btn.ready:hover { opacity: 0.88; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-label">Investment scenario</div>
+    <p class="page-instruction">Please answer the following questions according to your own investment preferences.</p>
+  </div>
+
+  <div class="scenario-box">
+    <p class="scenario-text">Please imagine you have just received an unexpected $10,000 from a family member. This is extra money beyond what you need for everyday expenses or emergencies, and you have decided to invest it. You are considering two options: a money market account and individual stocks.</p>
+    <div class="options-grid">
+      <div>
+        <div class="option-card" onclick="toggleDetail('mma-detail', this)">
+          <div class="option-header">
+            <span class="option-name">Money market account</span>
+            <button class="learn-more-btn" onclick="event.stopPropagation(); toggleDetail('mma-detail', null)">Learn more</button>
+          </div>
+        </div>
+        <div class="detail-panel" id="mma-detail">
+          <div class="detail-panel-header">
+            <span class="detail-panel-title">Money market account</span>
+            <button class="close-btn" onclick="closeDetail('mma-detail')">&times;</button>
+          </div>
+          You would invest in a single account with a guaranteed annual return of 3%.
+        </div>
+      </div>
+      <div>
+        <div class="option-card" onclick="toggleDetail('stocks-detail', this)">
+          <div class="option-header">
+            <span class="option-name">Individual stocks</span>
+            <button class="learn-more-btn" onclick="event.stopPropagation(); toggleDetail('stocks-detail', null)">Learn more</button>
+          </div>
+        </div>
+        <div class="detail-panel" id="stocks-detail">
+          <div class="detail-panel-header">
+            <span class="detail-panel-title">Individual stocks</span>
+            <button class="close-btn" onclick="closeDetail('stocks-detail')">&times;</button>
+          </div>
+          You would decide which companies to invest in and would allocate funds among them. Selecting the right mix of individual stocks can generate substantially higher returns than the money market account. However, selecting individual stocks also involves risk, as the value of stocks can fluctuate and some stocks perform better than others.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="question-num">Question 1</div>
+    <div class="question-text">Before you decide how to invest, would you prefer to:</div>
+    <div class="radio-options" id="q1-options">
+      <div class="radio-opt" onclick="selectRadio(this, 'advisor')">
+        <div class="radio-circle"></div>
+        <span class="radio-label">Talk to a financial advisor first</span>
+      </div>
+      <div class="radio-opt" onclick="selectRadio(this, 'self')">
+        <div class="radio-circle"></div>
+        <span class="radio-label">Choose my own investment without consulting an advisor</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="slider-section">
+    <div class="question-num-slider">Question 2</div>
+    <p class="slider-question">Regardless of your answer above, how much would you like to allocate to a money market account vs. individual stocks?</p>
+    <p class="slider-instruction">Use the slider below to indicate your allocation. The amounts will update automatically.</p>
+
+    <!-- Left card = money market, right card = stocks, matching slider labels -->
+    <div class="allocation-display">
+      <div class="alloc-card">
+        <div class="alloc-label">Money market account</div>
+        <div class="alloc-amount" id="displayMMA">$5,000</div>
+        <div class="alloc-pct" id="displayMMApct">50% of total</div>
+      </div>
+      <div class="alloc-card">
+        <div class="alloc-label">Individual stocks</div>
+        <div class="alloc-amount" id="displayStocks">$5,000</div>
+        <div class="alloc-pct" id="displayStocksPct">50% of total</div>
+      </div>
+    </div>
+
+    <!--
+      Slider: far left (0) = 100% money market, far right (10000) = 100% stocks
+      sliderValue = stocks amount
+      mma = 10000 - sliderValue
+    -->
+    <div class="slider-wrap">
+      <input type="range" min="0" max="10000" value="5000" step="100" id="slider" oninput="updateSlider(this.value)" onchange="onSliderCommit()"/>
+      <div class="slider-labels">
+        <span>100% money market<br>($0 in stocks)</span>
+        <span style="text-align:center;">$5,000 each</span>
+        <span style="text-align:right;">100% stocks<br>($0 money market)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="submit-row">
+    <button class="submit-btn" id="submitBtn" onclick="submitResponse()">Submit response &rarr;</button>
+  </div>
+
+</div>
+<script>
+  var hasInteracted = false;
+  var q1Answer = null;
+  var clickedStocks = false;
+  var clickedMMA = false;
+
+  function selectRadio(el, val) {
+    document.querySelectorAll('#q1-options .radio-opt').forEach(function(o) { o.classList.remove('selected'); });
+    el.classList.add('selected');
+    q1Answer = val;
+    checkReady();
+  }
+
+  function updateSlider(val) {
+    val = parseInt(val);
+    // slider value = stocks amount; mma = remainder
+    var stocks = val;
+    var mma = 10000 - val;
+    var stocksPct = Math.round(stocks / 100);
+    var mmaPct = 100 - stocksPct;
+
+    document.getElementById('displayMMA').textContent = '$' + mma.toLocaleString();
+    document.getElementById('displayMMApct').textContent = mmaPct + '% of total';
+    document.getElementById('displayStocks').textContent = '$' + stocks.toLocaleString();
+    document.getElementById('displayStocksPct').textContent = stocksPct + '% of total';
+
+    hasInteracted = true;
+    checkReady();
+  }
+
+  function onSliderCommit() { hasInteracted = true; checkReady(); }
+
+  function checkReady() {
+    document.getElementById('submitBtn').classList.toggle('ready', hasInteracted && q1Answer !== null);
+  }
+
+  function toggleDetail(id) {
+    var panel = document.getElementById(id);
+    var isOpen = panel.classList.contains('open');
+    document.querySelectorAll('.detail-panel').forEach(function(p) { p.classList.remove('open'); });
+    if (!isOpen) {
+      panel.classList.add('open');
+      if (id === 'stocks-detail') clickedStocks = true;
+      if (id === 'mma-detail') clickedMMA = true;
+    }
+    sendHeight();
+  }
+
+  function closeDetail(id) { document.getElementById(id).classList.remove('open'); sendHeight(); }
+
+  function submitResponse() {
+    if (!hasInteracted || !q1Answer) return;
+    var sliderVal = parseInt(document.getElementById('slider').value);
+    var stocksAmt = sliderVal;
+    var mmaAmt = 10000 - sliderVal;
+    window.parent.postMessage({
+      type: 'sliderResponse',
+      q1_advisor: q1Answer,
+      stocksAmount: stocksAmt,
+      mmaAmount: mmaAmt,
+      stocksPct: Math.round(stocksAmt / 100),
+      mmaPct: Math.round(mmaAmt / 100),
+      clickedStocksInfo: clickedStocks,
+      clickedMMAInfo: clickedMMA
+    }, '*');
+    window.parent.postMessage({ type: 'nextButton' }, '*');
+  }
+
+  function sendHeight() { window.parent.postMessage({ type: 'resize', height: document.body.scrollHeight }, '*'); }
+  window.addEventListener('load', sendHeight);
+  window.addEventListener('resize', sendHeight);
+  setTimeout(sendHeight, 500);
+</script>
+</body>
+</html>
