@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Investment Decision</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --border: #dddbd4;
+    --text-primary: #1a1a18;
+    --text-secondary: #5a5954;
+    --text-muted: #8a8880;
+    --accent: #4a4a45;
+    --accent-light: #eeedea;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-primary); min-height: 100vh; padding: 40px; }
+  .page { max-width: 680px; margin: 0 auto; }
+
+  .page-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.7px; color: var(--text-muted); margin-bottom: 28px; }
+
+  .question-block { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 30px 32px; margin-bottom: 16px; }
+
+  .reminder { font-size: 15px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+  .reminder strong { font-weight: 500; color: var(--text-primary); }
+
+  .question-text { font-size: 15.5px; font-weight: 500; color: var(--text-primary); line-height: 1.5; margin-bottom: 20px; }
+
+  .options-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+
+  .option-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    background: var(--surface);
+  }
+  .option-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); margin-bottom: 6px; }
+  .option-title { font-size: 15px; font-weight: 500; color: var(--text-primary); margin-bottom: 6px; }
+  .option-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+  .choice-btns { display: flex; flex-direction: column; gap: 10px; }
+  .choice-btn {
+    width: 100%; padding: 15px 20px; border-radius: 10px;
+    border: 1.5px solid var(--border); background: var(--surface);
+    font-family: 'DM Sans', sans-serif; font-size: 14.5px; font-weight: 500;
+    color: var(--text-primary); cursor: pointer; text-align: left;
+    transition: border-color 0.15s, background 0.15s;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .choice-btn:hover { border-color: var(--accent); background: var(--accent-light); }
+  .choice-btn.selected { border-color: var(--accent); background: var(--accent-light); }
+  .choice-btn .radio-circle {
+    width: 18px; height: 18px; border: 1.5px solid var(--border);
+    border-radius: 50%; flex-shrink: 0; display: flex;
+    align-items: center; justify-content: center; transition: all 0.15s;
+  }
+  .choice-btn.selected .radio-circle { border-color: var(--accent); background: var(--accent); }
+  .choice-btn.selected .radio-circle::after { content: ''; width: 7px; height: 7px; background: white; border-radius: 50%; display: block; }
+
+  .submit-row { display: flex; justify-content: flex-end; margin-top: 8px; }
+  .submit-btn {
+    background: var(--accent); color: white; border: none;
+    border-radius: 9px; padding: 13px 30px; font-size: 14px;
+    font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif;
+    opacity: 0.4; pointer-events: none; transition: opacity 0.15s;
+  }
+  .submit-btn.ready { opacity: 1; pointer-events: all; }
+  .submit-btn.ready:hover { opacity: 0.88; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-label">Investment Decision</div>
+
+  <div class="question-block">
+
+    <div class="reminder">
+      As a reminder, you and your family have received a <strong>$10,000 gift</strong> from relatives and have decided to invest this money. As the designated decision-maker, you have two options for how to proceed.
+    </div>
+
+    <div class="options-grid">
+      <div class="option-card">
+        <div class="option-label">Option 1</div>
+        <div class="option-title">Self-Invest</div>
+        <div class="option-desc">You manage the investment yourself, deciding how to allocate the $10,000 across a combination of investment types of your choosing. You take full responsibility for the allocation and its ongoing management.</div>
+      </div>
+      <div class="option-card">
+        <div class="option-label">Option 2</div>
+        <div class="option-title">Delegate to a Financial Advisor</div>
+        <div class="option-desc">You hand the decision to a professional financial advisor, who will allocate the $10,000 on your behalf based on their expertise. The advisor charges a standard fee of 1.5% for their services.</div>
+      </div>
+    </div>
+
+    <div class="question-text">Which option would you like to choose?</div>
+
+    <div class="choice-btns">
+      <button class="choice-btn" onclick="selectChoice('self', this)">
+        <div class="radio-circle"></div>
+        Self-Invest — I will manage the allocation myself
+      </button>
+      <button class="choice-btn" onclick="selectChoice('advisor', this)">
+        <div class="radio-circle"></div>
+        Delegate to a Financial Advisor — for a standard fee of 1.5%
+      </button>
+    </div>
+
+    <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.6; margin-top: 16px;">Please note that if you choose to self-invest, you will not need to pick specific investments as part of this study.</p>
+
+  </div>
+
+  <div class="submit-row">
+    <button class="submit-btn" id="submitBtn" onclick="submitChoice()">Continue &rarr;</button>
+  </div>
+
+</div>
+<script>
+  var choice = null;
+
+  function selectChoice(val, el) {
+    document.querySelectorAll('.choice-btn').forEach(function(b) { b.classList.remove('selected'); });
+    el.classList.add('selected');
+    choice = val;
+    document.getElementById('submitBtn').classList.add('ready');
+    sendHeight();
+  }
+
+  function submitChoice() {
+    if (!choice) return;
+    var payload = { type: 'investmentDecision', choice: choice };
+    window.parent.postMessage(payload, '*');
+    window.parent.postMessage({ type: 'nextButton' }, '*');
+  }
+
+  function sendHeight() {
+    window.parent.postMessage({ type: 'resize', height: document.body.scrollHeight }, '*');
+  }
+  window.addEventListener('load', sendHeight);
+  window.addEventListener('resize', sendHeight);
+  setTimeout(sendHeight, 500);
+</script>
+</body>
+</html>
