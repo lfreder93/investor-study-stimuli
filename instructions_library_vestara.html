@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instructions</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f5f4f0; --surface: #ffffff; --border: #dddbd4;
+    --text-primary: #1a1a18; --text-secondary: #5a5954; --text-muted: #8a8880;
+    --accent: #4a4a45; --accent-light: #eeedea;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-primary); min-height: 100vh; padding: 40px; }
+  .page { max-width: 680px; margin: 0 auto; }
+  .page-header { margin-bottom: 28px; }
+  .page-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.7px; color: var(--text-muted); margin-bottom: 10px; }
+  .page-title { font-size: 22px; font-weight: 500; color: var(--text-primary); line-height: 1.35; }
+  .content-block { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 32px 36px; margin-bottom: 16px; }
+  .content-block p { font-size: 15.5px; color: var(--text-secondary); line-height: 1.75; }
+  .content-block p + p { margin-top: 18px; }
+  .content-block p strong { font-weight: 500; color: var(--text-primary); }
+  .cta-block { background: var(--accent); border-radius: 14px; padding: 28px 36px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+  .cta-text { font-size: 15px; color: rgba(255,255,255,0.85); line-height: 1.6; }
+  .cta-btn { background: white; color: var(--accent); border: none; border-radius: 9px; padding: 13px 28px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; flex-shrink: 0; transition: opacity 0.15s; }
+  .cta-btn:hover { opacity: 0.9; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="page-header">
+    <div class="page-label">Instructions</div>
+    <h1 class="page-title">On the next page</h1>
+  </div>
+  <div class="content-block">
+    <p>You will now visit <strong>Vestara's</strong> financial education resource center. It contains a series of short articles about investing basics. You can click on any article to read it.</p>
+    <p>Please browse the articles at your own pace. You are free to read as many or as few as you'd like. Once you've had a chance to explore the resources available to support your investment decisions, click <strong>"Continue"</strong> to proceed.</p>
+  </div>
+  <div class="cta-block">
+    <p class="cta-text">Click the button when you are ready to continue.</p>
+    <button class="cta-btn" onclick="advance()">Continue &rarr;</button>
+  </div>
+</div>
+<script>
+  function advance() { window.parent.postMessage({ type: 'nextButton' }, '*'); }
+  function sendHeight() { window.parent.postMessage({ type: 'resize', height: document.body.scrollHeight }, '*'); }
+  window.addEventListener('load', sendHeight);
+  window.addEventListener('resize', sendHeight);
+  setTimeout(sendHeight, 500);
+</script>
+</body>
+</html>
